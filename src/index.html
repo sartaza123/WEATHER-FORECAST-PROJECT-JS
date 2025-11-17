@@ -8,6 +8,36 @@
   </head>
   <body>
     <div class="main-container">
+      <!-- -----------popup messages------------- -->
+      <div id="popup-messages" class="hidden">
+        <div
+          id="message-container"
+          class="absolute flex justify-center bg-[#00000070] h-120 w-full z99"
+        >
+          <!-- fetch current location message -->
+          <div id="current-location-message">
+            <div
+              class="text-lg md:text-2xl text-white mt-48 flex justify-center items-center p-5 h-14 md:h-18 lg:h-20 rounded-2xl border z-999 bg-[#00000075]"
+            >
+              <h3 id="location-message">Current Location Updated</h3>
+            </div>
+          </div>
+          <!-- temprature alert message -->
+          <div id="temprature-alert-message" class="hidden">
+            <div
+              class="sm:text-lg md:text-xl lg:text-2xl text-white mt-48 flex justify-center items-center flex-col p-3 md:p-4 lg:p-5 h-28 rounded-2xl border z-999 bg-[#00000075]"
+            >
+              <h3 id="temprature-alert">🚨 Temprature is higher than 40°C</h3>
+              <button
+                id="popup-ok-btn"
+                class="w-full mt-2 rounded-2xl bg-blue-500 text-lg"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       <section class="w-full">
         <!-- Background image container (JS will inject an <img>) -->
         <div id="background"></div>

@@ -219,9 +219,8 @@ async function getWeather(city, isCurrentLocation = false) {
     const feelsC = document.querySelector("#feels-like");
     feelsC.innerHTML = `Feels Like ${feelslike_c}°C`;
 
-    const humidityAndWindSpeed = (document.querySelector(
-      "#humidity-and-wind"
-    ).innerHTML = `Humidity: ${result.current.humidity}%  Wind Speed: ${result.current.wind_kph}km/h`);
+    const humidityAndWindSpeed = document.querySelector("#humidity-and-wind");
+    humidityAndWindSpeed.innerHTML = `Humidity: ${result.current.humidity}%  Wind Speed: ${result.current.wind_kph}km/h`;
 
     // °C / °F toggle
     const weather_cel_fer = document.querySelector("#current-weather");
@@ -266,12 +265,31 @@ async function getWeather(city, isCurrentLocation = false) {
     input.value = "";
     validation.innerHTML = "";
     suggestionBox.innerHTML = "";
+
+    // END OF getWeather function
+    return {
+      temp_c: result.current.temp_c,
+      temp_f: result.current.temp_f,
+    };
   } catch (error) {
     console.error(error);
   }
 }
 
 // ========== Current Location On Load ==========
+// ========== Current Location On Load ==========
+
+const messageContainer = document.querySelector("#popup-messages");
+const locationUpdatePopup = document.querySelector("#current-location-message");
+const tempratureAlertPopup = document.querySelector(
+  "#temprature-alert-message"
+);
+const popupOkBtn = document.querySelector("#popup-ok-btn");
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 window.addEventListener("load", async () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(async (position) => {
@@ -283,11 +301,23 @@ window.addEventListener("load", async () => {
         const response = await fetch(url);
         const result = await response.json();
         const currentCity = result.location.name;
-        getWeather(currentCity, true);
+        const weatherData = await getWeather(currentCity, true);
+        await delay(1000);
+        messageContainer.classList.remove("hidden");
+        await delay(2000);
+        locationUpdatePopup.classList.add("hidden");
+
+        if (weatherData.temp_c > 40 || weatherData.temp_f > 104) {
+          tempratureAlertPopup.classList.remove("hidden");
+          popupOkBtn.addEventListener("click", () => {
+            messageContainer.classList.add("hidden");
+          });
+        } else {
+          messageContainer.classList.add("hidden");
+        }
       } catch (error) {
         console.error("Error loading current location", error);
       }
     });
   }
 });
-// localStorage.clear();
