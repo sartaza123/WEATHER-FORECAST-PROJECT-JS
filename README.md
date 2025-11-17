@@ -1,4 +1,4 @@
-# ======================= SkyTrack – Weather Forecast App ===============================
+# SkyTrack – Weather Forecast App 
 
 SkyTrack is a clean and lightweight weather forecast application built using **Vanilla JavaScript**, **Tailwind CSS**, and the **WeatherAPI**.  
 The app shows real-time weather, of current location, a 5-day forecast, and keeps track of your recent searched cities using localStorage.
