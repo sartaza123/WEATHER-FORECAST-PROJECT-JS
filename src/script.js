@@ -54,6 +54,41 @@ searchBtn.addEventListener("click", () => {
   getWeather(city);
 });
 
+// --------------- Dynamic background------------
+
+function updateBackground(condition, isDay) {
+  const dynamicBackground = document.querySelector("#background");
+  const weather = condition.toLowerCase();
+
+  let bgImage = "default.jpg"; // fallback
+
+  if (weather.includes("rain")) {
+    bgImage = "rain.jpg";
+  } else if (weather.includes("cloud")) {
+    bgImage = "cloudy.jpg";
+  } else if (weather.includes("snow")) {
+    bgImage = "snow.jpg";
+  } else if (weather.includes("mist") || weather.includes("fog")) {
+    bgImage = "mist.jpg";
+  } else if (weather.includes("thunder")) {
+    bgImage = "thunder.jpg";
+  } else if (isDay === 0) {
+    bgImage = "night.jpg";
+  } else if (weather.includes("sunny") || weather.includes("clear")) {
+    bgImage = "sunny.jpg";
+  }
+
+  // Apply background image
+  const backgroundImg = document.createElement("img");
+  backgroundImg.setAttribute("src", `assets/images/${bgImage}`);
+  backgroundImg.setAttribute(
+    "class",
+    "fixed top-0 left-0 w-full h-full object-cover -z-10"
+  );
+
+  dynamicBackground.appendChild(backgroundImg);
+}
+
 // ------------------ Get Weather Function ------------------
 async function getWeather(city) {
   let isCelsioous = true;
@@ -62,6 +97,9 @@ async function getWeather(city) {
   try {
     const response = await fetch(url);
     const result = await response.json();
+
+    // Update background dynamically
+    updateBackground(result.current.condition.text, result.current.is_day);
 
     // searched location ==============================================
     const location = result.location.name;
