@@ -10,7 +10,7 @@ suggestionBox.className =
   "absolute bg-white opacity-50 shadow-lg rounded-lg mt-10 ml-5 max-h-48 overflow-y-auto z-50 text-gray-800";
 input.parentElement.appendChild(suggestionBox);
 
-// ----------------------------------- City Suggestions While Typing...--------------------------------------
+// ----------------------------------- City Suggestions While Typing --------------------------------------
 input.addEventListener("input", async () => {
   const query = input.value.trim();
   suggestionBox.innerHTML = ""; // clear old suggestions
@@ -23,21 +23,19 @@ input.addEventListener("input", async () => {
     );
     const data = await response.json();
 
-    // No results
     if (data.length === 0) {
       suggestionBox.innerHTML = `<li class="p-2 text-gray-400">No results found</li>`;
       return;
     }
 
-    // Add suggestions ===================================================
     data.forEach((city) => {
       const li = document.createElement("li");
       li.className = "p-2 hover:bg-gray-100 cursor-pointer";
       li.textContent = `${city.name}, ${city.region}, ${city.country}`;
       li.addEventListener("click", () => {
         input.value = city.name;
-        suggestionBox.innerHTML = ""; // hide suggestions
-        getWeather(city.name); // fetch weather for selected city
+        suggestionBox.innerHTML = "";
+        getWeather(city.name);
       });
       suggestionBox.appendChild(li);
     });
@@ -59,7 +57,7 @@ searchBtn.addEventListener("click", () => {
 // ------------------ Get Weather Function ------------------
 async function getWeather(city) {
   let isCelsioous = true;
-  const url = `https://api.weatherapi.com/v1/current.json?key=d0d50d5c2fad4fdaa6a121250251611&q=${city}&aqi=yes`;
+  const url = `https://api.weatherapi.com/v1/forecast.json?key=d0d50d5c2fad4fdaa6a121250251611&q=${city}&days=5&aqi=no`;
 
   try {
     const response = await fetch(url);
@@ -68,22 +66,19 @@ async function getWeather(city) {
     // searched location ==============================================
     const location = result.location.name;
     const locationCards = document.querySelector("#recent-location-cards");
-    const locationContainer = document.createElement("div");
-    locationContainer.className = "px-3 py-1 mr-6 flex liquid-glass";
-    const locationLogo = document.createElement("div");
-    locationLogo.innerHTML = `<ion-icon name="location-outline"></ion-icon>`;
-    const locationName = document.createElement("div");
-    locationName.innerHTML = location;
+    locationCards.innerHTML = `
+      <div class="locations px-3 py-1 mr-6 flex liquid-glass">
+        <div class="location-logo mr-1">
+          <ion-icon name="location-outline"></ion-icon>
+        </div>
+        <div class="location-name">${location}</div>
+      </div>`;
 
-    locationCards.appendChild(locationContainer);
-    locationContainer.append(locationLogo, locationName);
-
-    // temprature =====================================================
+    // temperature =====================================================
     const temp_c = parseInt(result.current.temp_c);
     const temp_f = parseInt(result.current.temp_f);
     tempratureDisplay.innerHTML = `
-      ${temp_c}<ion-icon name="radio-button-off-outline"
-      class="text-xl mb-9 ml-0.5"></ion-icon>C`;
+      ${temp_c}°C`;
 
     // weather report =================================================
     const weather = result.current.condition.text;
@@ -94,29 +89,47 @@ async function getWeather(city) {
     const feelslike_c = parseInt(result.current.feelslike_c);
     const feelslike_f = parseInt(result.current.feelslike_f);
     const feelsC = document.querySelector("#feels-like");
-    feelsC.innerHTML = `Feels Like ${feelslike_c}<ion-icon
-      name="radio-button-off-outline"
-      class="text-[6px] mb-2"></ion-icon>C`;
+    feelsC.innerHTML = `Feels Like ${feelslike_c}°C`;
 
     // current weather toggle between Cel & Fe ========================
     const weather_cel_fer = document.querySelector("#current-weather");
     weather_cel_fer.onclick = () => {
       if (isCelsioous === false) {
         tempratureDisplay.innerHTML = `
-        ${temp_c}<ion-icon name="radio-button-off-outline" class="text-xl mb-9 ml-0.5"></ion-icon>C`;
-        feelsC.innerHTML = `Feels Like ${feelslike_c}<ion-icon
-        name="radio-button-off-outline"
-        class="text-[6px] mb-2"></ion-icon>C`;
+        ${temp_c}°C`;
+        feelsC.innerHTML = `Feels Like ${feelslike_c}°C`;
       } else {
         tempratureDisplay.innerHTML = `
-        ${temp_f}<ion-icon name="radio-button-off-outline"
-        class="text-xl mb-9 ml-0.5"></ion-icon>F`;
-        feelsC.innerHTML = `Feels Like ${feelslike_f}<ion-icon
-          name="radio-button-off-outline"
-          class="text-[6px] mb-2"></ion-icon>F`;
+        ${temp_f}°F`;
+        feelsC.innerHTML = `Feels Like ${feelslike_f}°F`;
       }
       isCelsioous = !isCelsioous;
     };
+
+    // ======================== 5-Day Forecast ========================
+    const forecastContainer = document.querySelector("#days");
+    forecastContainer.innerHTML = ""; // clear old forecast cards
+
+    const forecastDays = result.forecast.forecastday;
+    forecastDays.forEach((day) => {
+      const date = day.date;
+      const condition = day.day.condition.text;
+      const icon = day.day.condition.icon;
+      const maxTemp = Math.round(day.day.maxtemp_c);
+      const minTemp = Math.round(day.day.mintemp_c);
+
+      const card = document.createElement("div");
+      card.className =
+        "p-4 rounded-xl bg-white/10 backdrop-blur-lg text-white text-center shadow-md m-2 w-32";
+      card.innerHTML = `
+        <p class="font-semibold text-sm">${date}</p>
+        <img src="${icon}" alt="${condition}" class="mx-auto w-12 h-12">
+        <p class="text-sm">${condition}</p>
+        <p class="text-lg font-bold">${maxTemp}°C</p>
+        <p class="text-xs text-gray-300">Min ${minTemp}°C</p>
+      `;
+      forecastContainer.appendChild(card);
+    });
 
     // humidity and wind =================================================
     const humidity = result.current.humidity;
@@ -131,8 +144,7 @@ async function getWeather(city) {
   }
 }
 
-//  current locaton when load =======================================
-
+//  current location when load =======================================
 window.addEventListener("load", async () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(async (position) => {
@@ -140,7 +152,7 @@ window.addEventListener("load", async () => {
       const lon = position.coords.longitude;
 
       try {
-        const url = `https://api.weatherapi.com/v1/current.json?key=d0d50d5c2fad4fdaa6a121250251611&q=${lat},${lon}&aqi=yes`;
+        const url = `https://api.weatherapi.com/v1/current.json?key=d0d50d5c2fad4fdaa6a121250251611&q=${lat},${lon}&aqi=no`;
         const response = await fetch(url);
         const result = await response.json();
         const currentCity = result.location.name;
