@@ -128,22 +128,30 @@ async function getWeather(city) {
     // currentLocationCard.appendChild(currentCard);
 
     currentLocationCard.innerHTML = `
-    <div class=" px-3 py-1 mr-6 flex selected-liquid-glass">
+    <div class=" px-3 py-1 mr-6 flex cursor-pointer selected-liquid-glass">
     <div class=" mr-1">
     <ion-icon name="navigate-outline"></ion-icon>
     </div>
     <div>${currentLocation}</div>
     </div>`;
+    currentLocationCard.addEventListener("click", () => {
+      getWeather(currentLocation);
+    });
 
     //  searched location =========================
     locationCards.innerHTML = "";
     recentCities.forEach((cityName) => {
       const searchedCard = document.createElement("div");
-      searchedCard.className = "px-3 py-1 mr-6 flex liquid-glass";
+      searchedCard.className =
+        "px-3 py-1 mr-6 cursor-pointer flex liquid-glass";
       const locationLogo = document.createElement("div");
       locationLogo.innerHTML = `<ion-icon name="location-outline"></ion-icon>`;
       const searchedLocationName = document.createElement("div");
       searchedLocationName.innerHTML = cityName;
+
+      searchedCard.addEventListener("click", () => {
+        getWeather(cityName);
+      });
 
       locationCards.appendChild(searchedCard);
       searchedCard.append(locationLogo, searchedLocationName);
@@ -238,4 +246,4 @@ window.addEventListener("load", async () => {
     });
   }
 });
-// localStorage.clear()
+// localStorage.clear();
