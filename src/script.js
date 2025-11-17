@@ -237,7 +237,9 @@ async function getWeather(city, isCurrentLocation = false) {
     forecastContainer.innerHTML = "";
 
     result.forecast.forecastday.forEach((day) => {
-      const date = day.date;
+      const dateObj = new Date(day.date);
+      const options = { day: "numeric", month: "short" };
+      const formattedDate = dateObj.toLocaleDateString("en-US", options);
       const condition = day.day.condition.text;
       const icon = day.day.condition.icon;
       const maxTemp = Math.round(day.day.maxtemp_c);
@@ -247,7 +249,7 @@ async function getWeather(city, isCurrentLocation = false) {
       card.className =
         "p-4 rounded-xl bg-white/10 backdrop-blur-lg text-white text-center shadow-md m-2 w-32";
       card.innerHTML = `
-        <p class="font-semibold text-sm">${date}</p>
+        <p class="font-semibold text-sm">${formattedDate}</p>
         <img src="${icon}" alt="${condition}" class="mx-auto w-12 h-12">
         <p class="text-sm">${condition}</p>
         <p class="text-lg font-bold">${maxTemp}°C</p>
