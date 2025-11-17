@@ -101,16 +101,53 @@ async function getWeather(city) {
     // Update background dynamically
     updateBackground(result.current.condition.text, result.current.is_day);
 
-    // searched location ==============================================
-    const location = result.location.name;
+    // All locations ==============================================
+
+    const searchedLocation = result.location.name;
     const locationCards = document.querySelector("#recent-location-cards");
-    locationCards.innerHTML = `
-      <div class="locations px-3 py-1 mr-6 flex liquid-glass">
-        <div class="location-logo mr-1">
-          <ion-icon name="location-outline"></ion-icon>
-        </div>
-        <div class="location-name">${location}</div>
-      </div>`;
+    let recentCities = JSON.parse(localStorage.getItem("recentSearches")) || [];
+    if (!recentCities.includes(searchedLocation)) {
+      recentCities.unshift(searchedLocation);
+      if (recentCities.length > 8) recentCities.pop();
+      localStorage.setItem("recentSearches", JSON.stringify(recentCities));
+    }
+    // current location =============
+    const currentLocation = recentCities.splice(recentCities.length - 1);
+    const currentLocationCard = document.querySelector(
+      "#current-location-card"
+    );
+    // const currentCard = document.createElement("div");
+    // currentCard.className = " px-3 py-1 mr-6 flex selected-liquid-glass";
+    // const currentLocationLogo = document.createElement("div");
+    // currentLocationLogo.className = "mr-1";
+    // currentLocationLogo.innerHTML = `<ion-icon name="navigate-outline"></ion-icon>`;
+    // const currentLocationName = document.createElement("div");
+    // currentLocationName.innerHTML = currentLocation;
+
+    // currentCard.append(currentLocationLogo, currentLocationName);
+    // currentLocationCard.appendChild(currentCard);
+
+    currentLocationCard.innerHTML = `
+    <div class=" px-3 py-1 mr-6 flex selected-liquid-glass">
+    <div class=" mr-1">
+    <ion-icon name="navigate-outline"></ion-icon>
+    </div>
+    <div>${currentLocation}</div>
+    </div>`;
+
+    //  searched location =========================
+    locationCards.innerHTML = "";
+    recentCities.forEach((cityName) => {
+      const searchedCard = document.createElement("div");
+      searchedCard.className = "px-3 py-1 mr-6 flex liquid-glass";
+      const locationLogo = document.createElement("div");
+      locationLogo.innerHTML = `<ion-icon name="location-outline"></ion-icon>`;
+      const searchedLocationName = document.createElement("div");
+      searchedLocationName.innerHTML = cityName;
+
+      locationCards.appendChild(searchedCard);
+      searchedCard.append(locationLogo, searchedLocationName);
+    });
 
     // temperature =====================================================
     const temp_c = parseInt(result.current.temp_c);
@@ -201,3 +238,4 @@ window.addEventListener("load", async () => {
     });
   }
 });
+// localStorage.clear()
