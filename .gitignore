@@ -28,18 +28,6 @@ yarn-error.log*
 *.gz
 *.iso
 
-# Media
-*.mp4
-*.mov
-*.avi
-*.mkv
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.svg
-*.webp
-
 # Editor folders
 .vscode/
 .idea/
