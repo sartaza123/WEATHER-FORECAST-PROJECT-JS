@@ -72,7 +72,7 @@ function updateBackground(condition, isDay) {
 
   dynamicBackground.innerHTML = ""; // Clear old
   const backgroundImg = document.createElement("img");
-  backgroundImg.setAttribute("src", `assets/images/${bgImage}`);
+  backgroundImg.setAttribute("src", `./src/assets/images/${bgImage}`);
   backgroundImg.setAttribute(
     "class",
     "fixed top-0 left-0 w-full h-full object-cover -z-10"
